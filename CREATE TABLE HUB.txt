@@ -1,0 +1,30 @@
+CREATE TABLE HUB
+(
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+
+    CombiBarCode_MRP   VARCHAR(100),
+    Company            VARCHAR(100),
+    Category           VARCHAR(100),
+    Brand              VARCHAR(100),
+    BrandForm          VARCHAR(50),
+
+    SBF                VARCHAR(50),
+    BarCode            VARCHAR(50),
+    UPC                VARCHAR(50),
+
+    MRP                DECIMAL(10,2),
+    SLP                DECIMAL(10,2),
+    RLP                DECIMAL(10,2),
+
+    CountOfMRP         INT,
+    Conversion         DECIMAL(10,2),
+
+    Combi              VARCHAR(10),
+    Mono               VARCHAR(10),
+    Units              INT,
+
+    PickingStatus      VARCHAR(20) DEFAULT 'PENDING',
+    ScanProducts       INT DEFAULT 0,
+
+    CreatedAt          DATETIME DEFAULT GETDATE()
+);
