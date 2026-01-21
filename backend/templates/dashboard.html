@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Warehouse System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-small">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                    </svg>
+                </div>
+                <h1>Warehouse Dashboard</h1>
+            </div>
+            <div class="header-center">
+                <div class="project-selector">
+                    <label>Project:</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>{{ user }}</span>
+                    <span class="role-badge {{ role }}">{{ role }}</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="btn-logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="summary-section">
+            <div class="summary-card total">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" id="totalProducts">0</span>
+                    <span class="card-label">Total Products</span>
+                </div>
+            </div>
+            <div class="summary-card scanned">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 11 12 14 22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" id="scannedProducts">0</span>
+                    <span class="card-label">Scanned Products</span>
+                </div>
+            </div>
+            <div class="summary-card remaining">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" id="remainingProducts">0</span>
+                    <span class="card-label">Remaining Products</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scanning Section -->
+        <section class="scan-section">
+            <div class="scan-input-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                    <line x1="7" y1="12" x2="17" y2="12" />
+                </svg>
+                <input type="text" id="barcodeInput" placeholder="Scan or enter barcode..." autofocus>
+                <button id="scanBtn" class="btn-scan">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 11 12 14 22 4" />
+                    </svg>
+                    Scan
+                </button>
+            </div>
+            <div class="scan-status" id="scanStatus"></div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="PICKED">Picked</option>
+                    <option value="EXCESS">Pick Excess</option>
+                    <option value="PENDING">Not Picked</option>
+                </select>
+            </div>
+            <div class="filter-group search-group">
+                <input type="text" id="searchInput" placeholder="Search by barcode, UPC...">
+                <button id="searchBtn" class="btn-search">Search</button>
+            </div>
+            <button id="refreshBtn" class="btn-refresh">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10" />
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                Refresh
+            </button>
+        </section>
+
+        <!-- Data Table -->
+        <section class="table-section">
+            <div class="table-wrapper">
+                <table id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Barcode</th>
+                            <th>Category</th>
+                            <th>Brand</th>
+                            <th>MRP</th>
+                            <th>Required</th>
+                            <th>Scanned</th>
+                            <th>Conversion</th>
+                            <th>UPC</th>
+                            <th>Picking Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="10" class="loading">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit MRP Modal -->
+    <div id="mrpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit MRP</h3>
+                <button class="modal-close" onclick="closeMrpModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Current MRP:</label>
+                    <span id="currentMrp">-</span>
+                </div>
+                <div class="form-group">
+                    <label for="newMrp">New MRP:</label>
+                    <input type="number" id="newMrp" step="0.01" placeholder="Enter new MRP">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeMrpModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveMrp()">Save</button>
+            </div>
+            <input type="hidden" id="editProductId">
+        </div>
+    </div>
+
+    <!-- Edit Quantity Modal (Admin Only) -->
+    <div id="qtyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Quantity (Admin)</h3>
+                <button class="modal-close" onclick="closeQtyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Current Scanned:</label>
+                    <span id="currentQty">-</span>
+                </div>
+                <div class="form-group">
+                    <label for="newQty">New Quantity:</label>
+                    <input type="number" id="newQty" min="0" placeholder="Enter new quantity">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeQtyModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveQty()">Save</button>
+            </div>
+            <input type="hidden" id="editQtyProductId">
+        </div>
+    </div>
+
+    <!-- Extra Scan Warning Modal -->
+    <div id="warningModal" class="modal warning-modal">
+        <div class="modal-content">
+            <div class="modal-header warning">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <h3>Extra Scan Warning!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="warningMessage">This product has been scanned more times than required.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-warning" onclick="closeWarningModal()">Acknowledge</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userRole = "{{ role }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>
