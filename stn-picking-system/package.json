@@ -1,0 +1,25 @@
+{
+	"name": "stn-picking-system",
+	"version": "1.0.0",
+	"description": "Warehouse STN Loose Picking System with QR/Barcode Scanning",
+	"scripts": {
+		"install:all": "cd server && npm install && cd ../client && npm install",
+		"dev:server": "cd server && npm run dev",
+		"dev:client": "cd client && npm run dev",
+		"start:server": "cd server && npm start",
+		"seed": "cd server && node scripts/seed.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yourusername/stn-picking-system.git"
+	},
+	"keywords": [
+		"warehouse",
+		"barcode",
+		"qr-code",
+		"picking",
+		"inventory"
+	],
+	"author": "",
+	"license": "ISC"
+}
